@@ -1,0 +1,5 @@
+// MITRE Technique: T1566.001 - Phishing: Spearphishing Attachment
+// Description: Emails with suspicious subjects or senders (e.g., exec impersonation, urgency keywords)
+EmailEvents
+| where Subject has_any ("urgent", "invoice", "payment", "click here", "reset", "action required") or SenderFromDomain in~ ("paypal.com", "microsoftsupport.com", "amazonn.com")
+| project Timestamp = TimeGenerated, Subject, SenderFromAddress, RecipientEmailAddress, DeliveryAction, NetworkMessageId
