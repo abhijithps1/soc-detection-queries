@@ -1,0 +1,7 @@
+// MITRE Technique: T1059.001 - PowerShell
+// Description: Detects use of encoded commands in PowerShell, which may indicate obfuscation
+DeviceProcessEvents
+| where FileName =~ "powershell.exe"
+| where ProcessCommandLine has_any ("-EncodedCommand", "-enc", "-e ")
+| project Timestamp, DeviceName, FileName, ProcessCommandLine, InitiatingProcessAccountName
+| extend  AccountCustomEntity = InitiatingProcessAccountName
