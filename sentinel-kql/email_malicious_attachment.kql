@@ -1,0 +1,11 @@
+// MITRE Technique: T1203 - Exploitation for Client Execution
+// Description: Email attachments that are flagged as malware
+EmailAttachmentInfo
+| where ThreatDetectionStatus in~ ("Malware", "High", "Severe")
+| project Timestamp = TimeGenerated, FileName, FileType, MalwareName, DetectionMethod, SenderFromAddress, RecipientEmailAddress
+
+or
+
+EmailAttachmentInfo
+| where ThreatTypes == @"Malware"
+| project Timestamp, FileName, FileType, SenderFromAddress, RecipientEmailAddress
