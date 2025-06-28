@@ -1,0 +1,19 @@
+// MITRE Technique: T1566 - Phishing (Delivery Techniques)
+// Description: Investigates emails where any email authentication check (SPF, DKIM, DMARC, CompAuth) failed
+EmailEvents
+| project Timestamp, Subject, SenderFromAddress, RecipientEmailAddress, AuthenticationDetails, DeliveryAction, ThreatTypes
+| extend auth = parse_json(AuthenticationDetails)
+| where auth["CompAuth"] != "pass" or auth["SPF"] != "pass" or auth["DKIM"] != "pass" or auth["DMARC"] != "pass"
+| where DeliveryAction in~ ("Delivered", "Spam", "Phish", "Blocked", "Replaced")
+
+or
+
+// MITRE Technique: T1566 - Phishing (Delivery Techniques)
+// Description: Show emails that were delivered but failed at least one authentication mechanism (SPF, DKIM, DMARC, CompAuth)
+
+EmailEvents
+| where DeliveryAction == "Delivered"
+| extend auth = parse_json(AuthenticationDetails)
+| where auth["SPF"] != "pass" or auth["DKIM"] != "pass" or auth["DMARC"] != "pass" or auth["CompAuth"] != "pass"
+| project Timestamp, Subject, SenderFromAddress, RecipientEmailAddress, DeliveryAction, 
+          SPF_Result = auth["SPF"], DKIM_Result = auth["DKIM"], DMARC_Result = auth["DMARC"], CompAuth_Result = auth["CompAuth"]
