@@ -1,0 +1,10 @@
+// Brute Force Sign-In Detection
+SigninLogs
+| where ResultType == "50074" or ResultType == "50126"  // Failed logins
+| summarize Count = count(), AttemptedUsers = make_set(UserPrincipalName, 5) by IPAddress, bin(TimeGenerated, 5m)
+| where Count > 5
+| extend timestamp = TimeGenerated, AccountCustomEntity = tostring(AttemptedUsers[0]), IPCustomEntity = IPAddress
+-----------------------------------------------------------------------------------------------------------------
+// ATT&CK Technique: T1110 - Brute Force
+// Description: Detects multiple failed login attempts from the same IP within 5 minutes.
+// Mitigation: Consider blocking the source IP or triggering MFA challenges.
